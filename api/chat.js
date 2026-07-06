@@ -39,7 +39,7 @@ module.exports = async function handler(req, res) {
   if (!message || message.length > 1500) return res.status(400).json({error:'Напиши вопрос длиной до 1500 знаков.'});
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return res.status(503).json({error:'Серверный ключ не задан. Используй клиентский чат (настрой ключ через интерфейс) или запусти через «Запустить Ирку-всезнайку.cmd».'});
-  const model = process.env.GEMINI_MODEL || 'gemini-3.5-flash';
+  const model = process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
   const context = COURSE_CONTEXT[req.body?.courseId] || 'Общий контекст: бытовая техника и безопасный подбор запчастей.';
   try {
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {

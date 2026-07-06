@@ -27,7 +27,7 @@ window.WIKI = {
   zip161: 'https://zip161.ru/category/zapchasti-dlya-stiralnykh-mashin/keny/'
 },
 
-pressostat: {
+'pressostat': {
   name: 'Прессостат',
   icon: '🫧',
   course: 'washer',
@@ -46,7 +46,7 @@ pressostat: {
   zip161: 'https://zip161.ru/category/zapchasti-dlya-stiralnykh-mashin/presostaty/'
 },
 
-ten-stiralnoy: {
+'ten-stiralnoy': {
   name: 'ТЭН стиральной машины',
   icon: '🫧',
   course: 'washer',
@@ -65,7 +65,7 @@ ten-stiralnoy: {
   zip161: 'https://zip161.ru/category/zapchasti-dlya-stiralnykh-mashin/ten/'
 },
 
-pompa-stiralnoy: {
+'pompa-stiralnoy': {
   name: 'Помпа (сливной насос)',
   icon: '🫧',
   course: 'washer',
@@ -84,7 +84,7 @@ pompa-stiralnoy: {
   zip161: 'https://zip161.ru/category/zapchasti-dlya-stiralnykh-mashin/pompa/'
 },
 
-ubl: {
+'ubl': {
   name: 'УБЗ (замок люка)',
   icon: '🫧',
   course: 'washer',
@@ -103,7 +103,7 @@ ubl: {
   zip161: 'https://zip161.ru/category/zapchasti-dlya-stiralnykh-mashin/ustrojstvo-blokirovki-lyuka/'
 },
 
-remen: {
+'remen': {
   name: 'Ремень привода',
   icon: '🫧',
   course: 'washer',
@@ -122,7 +122,7 @@ remen: {
   zip161: 'https://zip161.ru/category/zapchasti-dlya-stiralnykh-mashin/remen/'
 },
 
-amortizator: {
+'amortizator': {
   name: 'Амортизатор',
   icon: '🫧',
   course: 'washer',
@@ -141,7 +141,7 @@ amortizator: {
   zip161: 'https://zip161.ru/category/zapchasti-dlya-stiralnykh-mashin/amortizator/'
 },
 
-manzheta: {
+'manzheta': {
   name: 'Манжета люка',
   icon: '🫧',
   course: 'washer',
@@ -163,7 +163,7 @@ manzheta: {
 // ХОЛОДИЛЬНИКИ
 // ═══════════════════════════════════════
 
-uplotnitel: {
+'uplotnitel': {
   name: 'Уплотнитель двери',
   icon: '❄️',
   course: 'fridge',
@@ -182,7 +182,7 @@ uplotnitel: {
   zip161: 'https://zip161.ru/category/zapchasti-dlya-kholodilnikov/uplotnitel/'
 },
 
-termostat: {
+'termostat': {
   name: 'Термостат',
   icon: '❄️',
   course: 'fridge',
@@ -201,7 +201,7 @@ termostat: {
   zip161: 'https://zip161.ru/category/zapchasti-dlya-kholodilnikov/termostat/'
 },
 
-kompressor: {
+'kompressor': {
   name: 'Компрессор',
   icon: '❄️',
   course: 'fridge',
@@ -220,7 +220,7 @@ kompressor: {
   zip161: 'https://zip161.ru/category/zapchasti-dlya-kholodilnikov/kompressor/'
 },
 
-rele-puska: {
+'rele-puska': {
   name: 'Пускозащитное реле',
   icon: '❄️',
   course: 'fridge',
@@ -238,7 +238,7 @@ rele-puska: {
   zip161: 'https://zip161.ru/category/zapchasti-dlya-kholodilnikov/rele-puskovoe-rele-teplovoe/'
 },
 
-datchik-ntc: {
+'datchik-ntc': {
   name: 'Датчик NTC',
   icon: '❄️',
   course: 'fridge',
@@ -256,7 +256,7 @@ datchik-ntc: {
   zip161: 'https://zip161.ru/category/zapchasti-dlya-kholodilnikov/elektronnye-datchiki/'
 },
 
-ten-ottayki: {
+'ten-ottayki': {
   name: 'ТЭН оттайки',
   icon: '❄️',
   course: 'fridge',
@@ -274,7 +274,7 @@ ten-ottayki: {
   zip161: 'https://zip161.ru/category/zapchasti-dlya-kholodilnikov/nagrevatel-isparitelya-ten-ottajki/'
 },
 
-ventilyator-holodilnika: {
+'ventilyator-holodilnika': {
   name: 'Вентилятор испарителя',
   icon: '❄️',
   course: 'fridge',
@@ -297,7 +297,7 @@ ventilyator-holodilnika: {
 // ПОСУДОМОЕЧНЫЕ МАШИНЫ
 // ═══════════════════════════════════════
 
-tsirkulyacionny-nasos: {
+'tsirkulyacionny-nasos': {
   name: 'Циркуляционный насос',
   icon: '🍽️',
   course: 'dishwasher',
@@ -316,7 +316,7 @@ tsirkulyacionny-nasos: {
   zip161: 'https://zip161.ru/category/Dlia-posudomoechnykh-mashin/Nasos-cirkuliatcionnyi/'
 },
 
-razbryzgivatel: {
+'razbryzgivatel': {
   name: 'Разбрызгиватель (импеллер)',
   icon: '🍽️',
   course: 'dishwasher',
@@ -335,7 +335,7 @@ razbryzgivatel: {
   zip161: 'https://zip161.ru/category/Dlia-posudomoechnykh-mashin/Razbryzgivateli-impellery/'
 },
 
-ten-posudomoyki: {
+'ten-posudomoyki': {
   name: 'Проточный ТЭН посудомойки',
   icon: '🍽️',
   course: 'dishwasher',
@@ -358,7 +358,7 @@ ten-posudomoyki: {
 // ПЛИТЫ И ДУХОВКИ
 // ═══════════════════════════════════════
 
-svecha-rozzhiga: {
+'svecha-rozzhiga': {
   name: 'Свеча розжига',
   icon: '♨️',
   course: 'oven',
@@ -376,7 +376,7 @@ svecha-rozzhiga: {
   zip161: 'https://zip161.ru/category/zapchasti-dlya-gazovykh-i-elektroplit-dukhovok/svechi-rozzhiga/'
 },
 
-termopara: {
+'termopara': {
   name: 'Термопара',
   icon: '♨️',
   course: 'oven',
@@ -394,7 +394,7 @@ termopara: {
   zip161: 'https://zip161.ru/category/zapchasti-dlya-gazovykh-i-elektroplit-dukhovok/termopara/'
 },
 
-ten-duhovki: {
+'ten-duhovki': {
   name: 'ТЭН духовки',
   icon: '♨️',
   course: 'oven',
@@ -416,7 +416,7 @@ ten-duhovki: {
 // ВОДОНАГРЕВАТЕЛИ
 // ═══════════════════════════════════════
 
-ten-bojlera: {
+'ten-bojlera': {
   name: 'ТЭН бойлера',
   icon: '🚿',
   course: 'heater',
@@ -435,7 +435,7 @@ ten-bojlera: {
   zip161: 'https://zip161.ru/category/zapchasti-dlya-vodonagrevatelej/teni-dly-nagreva-vodi/'
 },
 
-anod: {
+'anod': {
   name: 'Магниевый анод',
   icon: '🚿',
   course: 'heater',
@@ -457,7 +457,7 @@ anod: {
 // ПЫЛЕСОСЫ
 // ═══════════════════════════════════════
 
-motor-pylesosa: {
+'motor-pylesosa': {
   name: 'Мотор-турбина пылесоса',
   icon: '🌪️',
   course: 'vacuum',
@@ -476,7 +476,7 @@ motor-pylesosa: {
   zip161: 'https://zip161.ru/category/zapchasti-dlya-pylesosov/motor/'
 },
 
-filtr-hepa: {
+'filtr-hepa': {
   name: 'HEPA-фильтр',
   icon: '🌪️',
   course: 'vacuum',
@@ -498,7 +498,7 @@ filtr-hepa: {
 // КОНДИЦИОНЕРЫ
 // ═══════════════════════════════════════
 
-kompressor-kondicionera: {
+'kompressor-kondicionera': {
   name: 'Компрессор кондиционера',
   icon: '🌬️',
   course: 'conditioner',
@@ -516,7 +516,7 @@ kompressor-kondicionera: {
   zip161: 'https://zip161.ru/category/Dlia-konditcionerov/Kompressora-kondic/'
 },
 
-drenazhny-nasos: {
+'drenazhny-nasos': {
   name: 'Дренажный насос',
   icon: '🌬️',
   course: 'conditioner',
@@ -534,7 +534,7 @@ drenazhny-nasos: {
   zip161: 'https://zip161.ru/category/Dlia-konditcionerov/drenazhnye-nasosy-kondic/'
 },
 
-krylchatka: {
+'krylchatka': {
   name: 'Крыльчатка',
   icon: '🌬️',
   course: 'conditioner',
@@ -556,7 +556,7 @@ krylchatka: {
 // ВЫТЯЖКИ
 // ═══════════════════════════════════════
 
-dvigatel-vytyazhki: {
+'dvigatel-vytyazhki': {
   name: 'Мотор вытяжки',
   icon: '💨',
   course: 'hood',
@@ -575,7 +575,7 @@ dvigatel-vytyazhki: {
   zip161: 'https://zip161.ru/category/dlya-vytyazhek/dvigatel/'
 },
 
-ugolniy-filtr: {
+'ugolniy-filtr': {
   name: 'Угольный фильтр вытяжки',
   icon: '💨',
   course: 'hood',
