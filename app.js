@@ -383,6 +383,38 @@ let currentWikiKey = '';
 
 function renderWiki(wikiKey) {
   if (wikiKey) currentWikiKey = wikiKey;
+
+  // If no specific key, show catalog of all wiki entries
+  if (!currentWikiKey || !WIKI[currentWikiKey]) {
+    let html = `<article class="wiki-page">
+      <div class="wiki-header">
+        <span class="wiki-icon">📖</span>
+        <div><h1>Вики деталей</h1><p style="color:var(--muted);font-size:14px">Энциклопедия деталей бытовой техники. Выбери категорию или найди нужную деталь.</p></div>
+      </div>`;
+
+    // Group by course
+    const groups = {};
+    for (const [key, entry] of Object.entries(WIKI)) {
+      if (!groups[entry.courseName]) groups[entry.courseName] = [];
+      groups[entry.courseName].push({ key, ...entry });
+    }
+
+    for (const [courseName, items] of Object.entries(groups)) {
+      html += `<div class="wiki-section"><h2>${items[0].icon} ${courseName}</h2>`;
+      items.forEach(item => {
+        html += `<div class="wiki-catalog-item" data-wiki="${item.key}">
+          <h3>${item.name}</h3>
+          <p>${item.simple.slice(0, 120)}…</p>
+        </div>`;
+      });
+      html += '</div>';
+    }
+
+    html += '</article>';
+    document.querySelector('#wikiContent').innerHTML = html;
+    return;
+  }
+
   const entry = WIKI[currentWikiKey];
   if (!entry) { document.querySelector('#wikiContent').innerHTML = '<p>Деталь не найдена.</p>'; return; }
 

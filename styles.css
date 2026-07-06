@@ -109,6 +109,10 @@
 .wiki-links{display:flex;gap:10px;flex-wrap:wrap}
 .wiki-link{cursor:pointer;color:var(--purple);text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px}
 .wiki-link:hover{color:var(--purple2)}
+.wiki-catalog-item{border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:10px;cursor:pointer;transition:.15s}
+.wiki-catalog-item:hover{border-color:var(--purple);background:#faf5ff}
+.wiki-catalog-item h3{margin:0 0 4px;font-size:17px}
+.wiki-catalog-item p{margin:0;font-size:13px;color:var(--muted)}
 
 /* ─── Knowledge Base styles ─── */
 .kb-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
