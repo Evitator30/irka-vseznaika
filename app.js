@@ -687,13 +687,70 @@ function showKeyPrompt() {
   document.querySelector('#keyInput').focus();
 }
 
+function showGitHubPrompt() {
+  const overlay = document.createElement('div');
+  overlay.className = 'key-overlay';
+  overlay.innerHTML = `
+    <div class="key-modal">
+      <h3>Настройка GitHub</h3>
+      <p>Введи персональный токен GitHub (scope: repo) для отправки ошибок и дополнений.</p>
+      <input id="ghTokenInput" type="password" placeholder="ghp_xxxx..." autocomplete="off">
+      <div class="key-modal-buttons">
+        <button id="ghTokenSave" class="neon-button">Сохранить</button>
+        <button id="ghTokenCancel" class="glass-button">Отмена</button>
+      </div>
+      <small>Создать токен: <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">GitHub Settings → Tokens</a> (нужен scope: repo)</small>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  document.querySelector('#ghTokenSave').onclick = () => {
+    const token = document.querySelector('#ghTokenInput').value.trim();
+    if (token) {
+      GitHubClient.setToken(token);
+      toast('GitHub токен сохранён!');
+      overlay.remove();
+    }
+  };
+  document.querySelector('#ghTokenCancel').onclick = () => overlay.remove();
+  overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
+  document.querySelector('#ghTokenInput').focus();
+}
+
 async function askMisa(text) {
+  addMessage('user', text);
+
+  // Check for special commands: Ошибка / Дополнение
+  const errorMatch = text.match(/^ошибка[:\s]+(.+)/i);
+  const additionMatch = text.match(/^дополнение[:\s]+(.+)/i);
+
+  if (errorMatch || additionMatch) {
+    if (!GitHubClient.hasToken()) {
+      addMessage('bot', 'Для отправки в репозиторий нужен GitHub токен. Нажми «Настроить GitHub» в памятке ниже.');
+      return;
+    }
+    addMessage('bot loading', 'Отправляю в репозиторий…', 'chatLoading');
+    try {
+      if (errorMatch) {
+        await GitHubClient.reportError(errorMatch[1].trim());
+        document.querySelector('#chatLoading')?.remove();
+        addMessage('bot', '✅ Ошибка записана! Спасибо, Ирина. Мы это исправим.');
+      } else {
+        await GitHubClient.reportAddition(additionMatch[1].trim());
+        document.querySelector('#chatLoading')?.remove();
+        addMessage('bot', '✅ Дополнение записано! Хорошая находка, Ирина.');
+      }
+    } catch (e) {
+      document.querySelector('#chatLoading')?.remove();
+      addMessage('bot', `Не удалось отправить: ${e.message}`);
+    }
+    return;
+  }
+
   if (!GeminiClient.hasKey()) {
     showKeyPrompt();
     return;
   }
 
-  addMessage('user', text);
   addMessage('bot loading', 'Думаю', 'chatLoading');
   document.querySelector('#apiStatus').textContent = 'сообщение отправлено…';
 
@@ -805,6 +862,13 @@ keyBtn.textContent = 'Настроить ключ Gemini';
 keyBtn.onclick = showKeyPrompt;
 const chatAbout = document.querySelector('.chat-about');
 if (chatAbout) chatAbout.appendChild(keyBtn);
+
+// GitHub token setup button
+const ghBtn = document.createElement('button');
+ghBtn.className = 'glass-button key-setup-btn';
+ghBtn.textContent = 'Настроить GitHub';
+ghBtn.onclick = showGitHubPrompt;
+if (chatAbout) chatAbout.appendChild(ghBtn);
 
 // ─── Init ───
 
