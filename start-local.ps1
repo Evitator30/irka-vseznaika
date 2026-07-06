@@ -10,7 +10,7 @@ if (-not (Test-Path -LiteralPath $EnvFile)) {
   try { $Key = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($Ptr) }
   finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($Ptr) }
   if ([string]::IsNullOrWhiteSpace($Key)) { throw 'API key is empty.' }
-  [IO.File]::WriteAllLines($EnvFile, @("GEMINI_API_KEY=$Key", 'GEMINI_MODEL=gemini-2.5-flash-lite'), [Text.UTF8Encoding]::new($false))
+  [IO.File]::WriteAllLines($EnvFile, @("GEMINI_API_KEY=$Key", 'GEMINI_MODEL=gemini-3.5-flash'), [Text.UTF8Encoding]::new($false))
 }
 
 Set-Location -LiteralPath $Project

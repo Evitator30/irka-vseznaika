@@ -35,7 +35,7 @@
 
 1. Загрузите содержимое папки в закрытый GitHub-репозиторий.
 2. Импортируйте репозиторий в Vercel.
-3. В Environment Variables добавьте `GEMINI_API_KEY` и `GEMINI_MODEL=gemini-2.5-flash-lite`.
+3. В Environment Variables добавьте `GEMINI_API_KEY` и `GEMINI_MODEL=gemini-3.5-flash`.
 4. Выполните Deploy.
 
 ### Локальный сервер
