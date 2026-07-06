@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#110a24">
+  <meta name="description" content="Ирка-всезнайка — игровое обучение продавца запчастей бытовой техники">
+  <title>Ирка-всезнайка · Академия запчастей</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <button class="side-close" id="sideClose" aria-label="Закрыть меню">×</button>
+      <a class="brand" href="#home" data-route="home"><span class="brand-orbit">И</span><span><b>Ирка-всезнайка</b><small>академия ZIP161</small></span></a>
+      <div class="level-card"><span>Уровень продавца</span><b id="levelName">Новичок-исследователь</b><div class="xp-line"><i id="xpLine"></i></div><small><em id="xpValue">0</em> XP до нового уровня</small></div>
+      <nav class="nav">
+        <button data-route="home" class="active"><span>✦</span>Сегодня</button>
+        <button data-route="academy"><span>◈</span>Академия <em>11</em></button>
+        <button data-route="search"><span>⌕</span>Справочник</button>
+        <button data-route="review"><span>↻</span>Повторение <em id="dueBadge">0</em></button>
+        <button data-route="chat"><span>◌</span>Спросить Мису</button>
+      </nav>
+      <div class="side-misa"><img src="assets/misa-thinking.png" alt="Миса"><p>Не угадываем.<br><b>Проверяем!</b></p></div>
+      <div class="side-foot"><span class="signal"></span> Прогресс хранится на этом устройстве</div>
+    </aside>
+
+    <main>
+      <header class="topbar"><button id="menuButton" aria-label="Открыть меню">☰</button><div><small>Личная учебная мастерская</small><b>Ирина, добро пожаловать на смену знаний</b></div><button class="profile-pill" data-route="review"><span>🔥</span><b id="streak">1</b><small>день</small></button></header>
+
+      <section class="page active" id="page-home">
+        <div class="hero-v2">
+          <img class="hero-bg" src="assets/scenes/water-systems.png" alt="Внутреннее устройство бытовой техники">
+          <div class="hero-shade"></div>
+          <div class="hero-copy">
+            <span class="kicker"><i></i> Академия бытовой техники</span>
+            <h1>Разбирайся<br><span>как в магии,</span><br>объясняй как профи</h1>
+            <p>11 маршрутов: от большого принципа до конкретной детали, артикула и честного ответа покупателю.</p>
+            <div class="hero-buttons"><button class="neon-button" id="continueButton">Продолжить обучение <span>→</span></button><button class="glass-button" data-route="academy">Выбрать прибор</button></div>
+            <div class="hero-mini"><b id="overallPercent">0%</b><span>общий прогресс</span><div><i id="overallLine"></i></div></div>
+          </div>
+          <div class="misa-float"><div class="speech-v2">Начнём с общей картины,<br>а детали встанут на места!</div><img src="assets/misa-lecturer.png" alt="Миса-лектор"></div>
+        </div>
+
+        <div class="metric-row">
+          <article><span class="metric-icon purple">◈</span><div><b id="coursesDone">0 / 11</b><small>маршрутов завершено</small></div></article>
+          <article><span class="metric-icon cyan">◎</span><div><b id="partsSeen">0</b><small>деталей разобрано</small></div></article>
+          <article><span class="metric-icon coral">↻</span><div><b id="dueToday">0</b><small>вопросов на сегодня</small></div></article>
+          <article><span class="metric-icon lime">✓</span><div><b id="confidence">—</b><small>уверенных ответов</small></div></article>
+        </div>
+
+        <div class="section-heading"><div><span class="kicker"><i></i> Выбери энергию</span><h2>Три мира бытовой техники</h2></div><button class="plain-link" data-route="academy">Все 11 приборов →</button></div>
+        <div class="world-grid">
+          <article class="world-card" data-world="water"><img src="assets/scenes/water-systems.png" alt="Водяные системы"><div><span>Вода + движение</span><h3>Стиралка, посудомойка, холодильник</h3><p>Насосы, клапаны, нагрев и маршруты воды.</p></div></article>
+          <article class="world-card" data-world="heat"><img src="assets/scenes/heat-systems.png" alt="Тепловые системы"><div><span>Управляемое тепло</span><h3>Духовка, бойлер, сушилка, котёл</h3><p>ТЭНы, термостаты, изоляция и безопасность.</p></div></article>
+          <article class="world-card" data-world="air"><img src="assets/scenes/air-systems.png" alt="Воздушные системы"><div><span>Воздух + поток</span><h3>Пылесос, кондиционер, вытяжка</h3><p>Моторы, крыльчатки, фильтры и воздуховоды.</p></div></article>
+        </div>
+
+        <div class="daily-grid">
+          <article class="daily-card"><span class="kicker"><i></i> Принцип дня</span><h2>Похожая деталь ≠ подходящая деталь</h2><p>Совместимость — это пересечение модели, кода, геометрии и электрических параметров. Если доказательств мало, профессиональный ответ: «не хватает данных».</p><button class="plain-link" data-route="search">Открыть чек-лист подбора →</button></article>
+          <article class="love-card"><span>Послание от Мисы</span><p>Знание растёт не когда всё помнишь, а когда умеешь задать правильный вопрос.</p><small>Комплименты будут за конкретные победы — договорились 🐾</small></article>
+        </div>
+      </section>
+
+      <section class="page" id="page-academy">
+        <div class="page-head"><div><span class="kicker"><i></i> Полная программа</span><h1>Академия техники</h1><p>Не каталог названий, а карта взаимосвязей. Каждый маршрут: принцип → системы → детали ZIP161 → практика продавца.</p></div><div class="big-stat"><b id="academyProgress">0%</b><small>пройдено</small></div></div>
+        <div class="filter-row"><button class="active" data-filter="all">Все</button><button data-filter="Вода + движение">Вода</button><button data-filter="Перенос тепла">Холод</button><button data-filter="Управляемое тепло">Тепло</button><button data-filter="Воздушный поток">Воздух</button><button data-filter="Тепло + воздух">Тепло + воздух</button><button data-filter="Много мини-систем">Мелкая техника</button><button data-filter="Отопительный контур">Отопление</button></div>
+        <div class="course-grid" id="courseGrid"></div>
+      </section>
+
+      <section class="page" id="page-course">
+        <button class="back-button" data-route="academy">← Все маршруты</button>
+        <div id="courseContent"></div>
+      </section>
+
+      <section class="page" id="page-search">
+        <div class="page-head compact"><div><span class="kicker"><i></i> Рабочий справочник</span><h1>Найти деталь и понять её место</h1><p>Ищи по названию: ТЭН, помпа, датчик, ремень, фильтр…</p></div></div>
+        <label class="search-box"><span>⌕</span><input id="partSearch" type="search" placeholder="Например: термостат или мотор"><kbd>ESC</kbd></label>
+        <div class="checklist-panel"><div><span class="kicker"><i></i> Шесть шагов</span><h2>Чек-лист честного подбора</h2></div><div class="checklist" id="sellerChecklist"></div></div>
+        <div class="search-count" id="searchCount"></div><div class="part-results" id="partResults"></div>
+      </section>
+
+      <section class="page" id="page-review">
+        <div class="review-top"><div><span class="kicker"><i></i> Интервальное повторение</span><h1>Мозгу — главное,<br>лишнему — выход</h1><p>Вопрос можно отложить или убрать навсегда. Здесь нет наказания за «не помню» — это команда показать карточку раньше.</p></div><img src="assets/misa-thinking.png" alt="Задумавшаяся Миса"></div>
+        <div class="review-shell"><div class="memory-card" id="memoryCard"></div><aside><h3>Сессия</h3><div class="session-ring"><b id="sessionDone">0</b><span>ответов</span></div><p><b id="sessionLeft">0</b> осталось сейчас</p><div class="legend"><span><i class="red"></i>10 минут</span><span><i class="orange"></i>1 день</span><span><i class="cyan"></i>несколько дней</span></div><button id="resetProgress" class="danger-link">Сбросить прогресс</button></aside></div>
+      </section>
+
+      <section class="page" id="page-chat">
+        <div class="chat-layout"><aside class="chat-about"><img src="assets/misa-lecturer.png" alt="Миса"><span class="kicker"><i></i> ИИ-наставница</span><h1>Спросить Мису</h1><p>Она объяснит принцип, свяжет деталь с соседними узлами и не подтвердит совместимость без данных.</p><div class="chat-status"><span></span><b>Gemini 2.5 Flash-Lite</b><small id="apiStatus">нужен ключ Gemini</small></div></aside><div class="chat-panel"><div class="chat-toolbar"><select id="chatContext"><option value="general">Общий вопрос</option></select><button id="clearChat">Очистить</button></div><div class="quick-list" id="quickList"><button>Объясни разницу между термостатом и датчиком</button><button>Какие данные нужны для подбора ТЭНа?</button><button>Проверь меня по стиральной машине</button></div><div class="messages" id="messages"><div class="message bot"><b>Миса</b><p>Привет, Ирина! Я готова разбирать детали по-взрослому, но простыми образами. Выбери прибор сверху или задай общий вопрос.</p></div></div><form id="chatForm"><textarea id="chatInput" maxlength="1500" rows="1" placeholder="Например: почему у помпы важна улитка?"></textarea><button type="submit">↑</button></form><small class="chat-note">Данные отправляются напрямую в Gemini API. Ключ хранится только в твоём браузере.</small></div></div>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script src="course-data.js"></script>
+  <script src="gemini-client.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

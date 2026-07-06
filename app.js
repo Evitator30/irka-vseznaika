@@ -1,0 +1,574 @@
+const STORE = 'irka-academy-v2';
+const today = () => new Date();
+
+const essentialCards = [
+  {id:'core-model',course:'Основа продавца',q:'Какой главный идентификатор нужно попросить у покупателя?',a:'Полную модель и продуктовый/сервисный номер с шильдика; для детали — ещё её оригинальный код.'},
+  {id:'core-brand',course:'Основа продавца',q:'Почему одного бренда недостаточно для подбора?',a:'Внутри одного бренда сотни моделей, ревизий, размеров, разъёмов и поставщиков узлов.'},
+  {id:'core-status',course:'Основа продавца',q:'Какие три честных статуса совместимости существуют?',a:'ПОДХОДИТ, НЕ ПОДХОДИТ и НЕ ХВАТАЕТ ДАННЫХ.'},
+  {id:'core-unknown',course:'Основа продавца',q:'Отсутствие модели в списке означает «не подходит»?',a:'Нет. Это может означать только отсутствие проверенных данных.'},
+  {id:'core-code',course:'Основа продавца',q:'Что надёжнее: внешний вид детали или оригинальный код?',a:'Код надёжнее, но и его сверяют с моделью и критическими параметрами.'},
+  {id:'core-safe',course:'Основа продавца',q:'Задача продавца — поставить диагноз по одному симптому?',a:'Нет. Продавец помогает сузить систему и подобрать подтверждённую деталь, не обещая диагноз без проверки.'}
+];
+
+const courseCards = COURSES.flatMap(c => c.cards.map((x, i) => ({
+  id: `${c.id}-${i}`, course: c.name, courseId: c.id, q: x[0], a: x[1]
+})));
+
+const allCards = [...essentialCards, ...courseCards];
+
+let state = loadState();
+let currentCourse = COURSES.find(c => c.id === state.lastCourse) || COURSES[0];
+let currentTab = 'principle';
+let reviewOffset = 0;
+let sessionDone = 0;
+
+// ─── Storage ───
+
+function loadState() {
+  const base = {courses:{}, reviews:{}, stats:{answers:0, confident:0, xp:0}, firstSeen:new Date().toISOString(), lastCourse:'washer'};
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORE) || '{}');
+    return {
+      ...base, ...saved,
+      courses: saved.courses || {},
+      reviews: saved.reviews || {},
+      stats: {...base.stats, ...(saved.stats || {})}
+    };
+  } catch { return base; }
+}
+
+function save() {
+  localStorage.setItem(STORE, JSON.stringify(state));
+  updateStats();
+}
+
+// ─── Helpers ───
+
+function esc(s) {
+  return String(s).replace(/[&<>'"]/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'
+  }[c]));
+}
+
+function toast(text) {
+  const e = document.querySelector('#toast');
+  e.textContent = text;
+  e.classList.add('show');
+  setTimeout(() => e.classList.remove('show'), 2700);
+}
+
+function courseState(id) {
+  return state.courses[id] || (state.courses[id] = {opened:false, completed:false, tab:'principle'});
+}
+
+function unlockedCards() {
+  return allCards.filter(c => !c.courseId || courseState(c.courseId).opened);
+}
+
+function dueCards() {
+  return unlockedCards().filter(c => {
+    const r = state.reviews[c.id];
+    return !r?.suspended && (!r?.due || new Date(r.due) <= today());
+  });
+}
+
+function courseProgress(id) {
+  const c = courseState(id);
+  return c.completed ? 100 : c.opened ? 25 : 0;
+}
+
+// ─── Routing ───
+
+function route(name, id) {
+  if (name === 'course') {
+    currentCourse = COURSES.find(c => c.id === (id || currentCourse.id)) || COURSES[0];
+    state.lastCourse = currentCourse.id;
+    courseState(currentCourse.id).opened = true;
+    currentTab = courseState(currentCourse.id).tab || 'principle';
+    save();
+    renderCourse();
+  }
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === `page-${name}`));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active',
+    b.dataset.route === name || (name === 'course' && b.dataset.route === 'academy')
+  ));
+  document.querySelector('#sidebar').classList.remove('open');
+  if (name === 'academy') renderAcademy();
+  if (name === 'review') { reviewOffset = 0; renderReview(); }
+  if (name === 'search') renderSearch();
+  if (name === 'chat') renderChatSetup();
+  history.replaceState(null, '', name === 'course' ? `#course/${currentCourse.id}` : `#${name}`);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ─── Stats ───
+
+function updateStats() {
+  const completed = COURSES.filter(c => courseState(c.id).completed).length;
+  const percent = Math.round(completed / COURSES.length * 100);
+  const due = dueCards().length;
+  const confidence = state.stats.answers
+    ? `${Math.round(state.stats.confident / state.stats.answers * 100)}%`
+    : '—';
+  const xp = state.stats.xp || 0;
+  const level = Math.floor(xp / 200);
+  const within = xp % 200;
+  const levels = ['Новичок-исследователь','Знаток систем','Навигатор деталей','Мастер подбора','Эксперт ZIP161'];
+
+  document.querySelector('#levelName').textContent = levels[Math.min(level, levels.length - 1)];
+  document.querySelector('#xpValue').textContent = within;
+  document.querySelector('#xpLine').style.width = `${within / 2}%`;
+  document.querySelector('#overallPercent').textContent = `${percent}%`;
+  document.querySelector('#overallLine').style.width = `${percent}%`;
+  document.querySelector('#coursesDone').textContent = `${completed} / ${COURSES.length}`;
+  document.querySelector('#partsSeen').textContent = COURSES.filter(c => courseState(c.id).opened).reduce((n, c) => n + c.parts.length, 0);
+  document.querySelector('#dueToday').textContent = due;
+  document.querySelector('#dueBadge').textContent = due;
+  document.querySelector('#confidence').textContent = confidence;
+  document.querySelector('#academyProgress').textContent = `${percent}%`;
+  const days = Math.max(1, Math.ceil((today() - new Date(state.firstSeen)) / 86400000));
+  document.querySelector('#streak').textContent = days;
+}
+
+// ─── Academy Grid ───
+
+function renderAcademy(filter = 'all') {
+  const items = COURSES.filter(c => filter === 'all' || c.family === filter);
+  document.querySelector('#courseGrid').innerHTML = items.map(c => {
+    const p = courseProgress(c.id);
+    return `<article class="course-card" style="--accent:${c.color}" data-course="${c.id}">
+      <div class="course-top">
+        <span class="course-icon">${c.icon}</span>
+        <span class="course-status">${p===100?'✓ маршрут пройден':p?'в процессе':'не начат'}</span>
+      </div>
+      <h2>${c.name}</h2><p>${c.tagline}</p>
+      <div class="course-meta">
+        <span>◷ ${c.minutes} минут</span>
+        <span>◫ ${c.parts.length} деталей</span>
+        <span>✦ ${c.cards.length} вопросов</span>
+      </div>
+      <div class="card-progress"><i style="width:${p}%"></i></div>
+      <div class="course-open"><span>${c.family}</span><span>Открыть →</span></div>
+    </article>`;
+  }).join('');
+}
+
+// ─── Course View ───
+
+function renderCourse() {
+  const c = currentCourse;
+  const tabs = [
+    ['principle','1. Как работает'],
+    ['systems','2. Карта систем'],
+    ['parts','3. Детали ZIP161'],
+    ['practice','4. Практика продавца']
+  ];
+  document.querySelector('#courseContent').innerHTML = `
+    <section class="course-hero" style="--accent:${c.color}">
+      <img src="assets/scenes/${c.scene}" alt="${c.name}: внутренние системы">
+      <div class="course-hero-copy">
+        <span class="course-emoji">${c.icon}</span>
+        <span class="kicker"><i></i> ${c.family} · ${c.minutes} минут</span>
+        <h1>${c.name}</h1><p>${c.tagline}</p>
+      </div>
+    </section>
+    <nav class="course-tabs">${tabs.map(t =>
+      `<button data-tab="${t[0]}" class="${currentTab===t[0]?'active':''}">${t[1]}</button>`
+    ).join('')}</nav>
+    <div id="lessonPanel"></div>`;
+  renderCourseTab();
+}
+
+function renderCourseTab() {
+  const c = currentCourse;
+  courseState(c.id).tab = currentTab;
+  save();
+  let html = '';
+
+  if (currentTab === 'principle') {
+    html = `<article class="lesson-panel">
+      <span class="kicker"><i></i> Большая идея</span>
+      <h2>${c.tagline}</h2>
+      <p class="lesson-lead">${c.principle}</p>
+      <div class="flow-track">${c.flow.map((x, i) =>
+        `${i?'<span class="flow-arrow">→</span>':''}<div class="flow-step"><b>${i+1}</b><br>${x}</div>`
+      ).join('')}</div>
+      <div class="fact-box"><b>История и ассоциация.</b> ${c.history}</div>
+      ${courseFooter()}</article>`;
+  }
+
+  if (currentTab === 'systems') {
+    html = `<article class="lesson-panel">
+      <span class="kicker"><i></i> От целого к узлам</span>
+      <h2>Команды внутри прибора</h2>
+      <p class="lesson-lead">Сначала определи, какая система выполняет задачу. Только потом ищи отдельную деталь.</p>
+      <div class="system-grid">${c.systems.map((s, i) =>
+        `<div class="system-card"><b>${String(i+1).padStart(2,'0')} · ${s[0]}</b><span>${s[1]}</span></div>`
+      ).join('')}</div>
+      <div class="fact-box"><b>Рабочий приём:</b> если покупатель описывает симптом, назови 2–4 возможные системы, но не обещай конкретную поломку без диагностики.</div>
+      ${courseFooter()}</article>`;
+  }
+
+  if (currentTab === 'parts') {
+    html = `<article class="lesson-panel">
+      <span class="kicker"><i></i> Связь с каталогом</span>
+      <h2>Детали и ключи подбора</h2>
+      <p class="lesson-lead">Функция объясняет, зачем деталь существует. Колонка «что спросить» защищает от неверной продажи.</p>
+      <div class="part-table">${c.parts.map(p =>
+        `<div class="part-row"><h3>${p.n}</h3><p>${p.f}</p><p class="ask"><b>Спросить:</b> ${p.ask}</p><a href="${p.url}" target="_blank" rel="noopener" title="Открыть ZIP161">↗</a></div>`
+      ).join('')}</div>
+      <div class="zip-example">
+        <strong>${c.example.sku}</strong>
+        <div><h3>${c.example.name}</h3><p>${c.example.note}</p></div>
+        <a href="${c.example.url}" target="_blank" rel="noopener">Открыть ZIP161 ↗</a>
+      </div>
+      ${courseFooter()}</article>`;
+  }
+
+  if (currentTab === 'practice') {
+    html = `<article class="lesson-panel">
+      <span class="kicker"><i></i> Язык покупателя</span>
+      <h2>Симптом — это направление, не диагноз</h2>
+      <p class="lesson-lead">Читай цепочку слева направо: от простого и внешнего к узлам, которые требуют проверки.</p>
+      <div class="symptom-grid">${c.symptoms.map(s =>
+        `<div class="symptom-card"><b>«${s[0]}»</b><p>${s[1]}</p></div>`
+      ).join('')}</div>
+      ${c.safety ? `<div class="safety-box"><b>Безопасность.</b> ${c.safety}</div>` : ''}
+      <div class="case-box">
+        <span>Мини-кейс у прилавка</span>
+        <h3>${c.caseQ}</h3>
+        <div class="case-options">${c.caseOptions.map((o, i) =>
+          `<button data-case="${i}">${o}</button>`
+        ).join('')}</div>
+        <p id="caseFeedback"></p>
+      </div>
+      ${courseFooter()}</article>`;
+  }
+
+  document.querySelector('#lessonPanel').innerHTML = html;
+}
+
+function courseFooter() {
+  const done = courseState(currentCourse.id).completed;
+  return `<div class="complete-row">
+    <p>Карточки этого маршрута уже добавлены в повторение.</p>
+    <button class="complete-button ${done?'done':''}" data-complete="${currentCourse.id}">
+      ${done ? '✓ Маршрут пройден' : 'Завершить маршрут +50 XP'}
+    </button>
+  </div>`;
+}
+
+function completeCourse(id) {
+  const cs = courseState(id);
+  if (!cs.completed) {
+    cs.completed = true;
+    state.stats.xp += 50;
+    save();
+    toast('Маршрут завершён — сильная работа с системой!');
+  }
+  renderCourseTab();
+}
+
+// ─── Search / Reference ───
+
+function renderSearch(query = '') {
+  document.querySelector('#sellerChecklist').innerHTML = SELLER_CHECKLIST.map(x =>
+    `<div class="check-item"><b>${x[0]}</b><div><span>${x[1]}</span><small>${x[2]}</small></div></div>`
+  ).join('');
+
+  const q = query.trim().toLowerCase();
+  const results = COURSES.flatMap(c => c.parts.map(p => ({...p, course:c.name, icon:c.icon})))
+    .filter(p => !q || `${p.n} ${p.f} ${p.ask} ${p.course}`.toLowerCase().includes(q));
+
+  document.querySelector('#searchCount').textContent = q
+    ? `Найдено: ${results.length}`
+    : `В справочнике: ${results.length} ключевых деталей`;
+
+  document.querySelector('#partResults').innerHTML = results.map(p =>
+    `<article class="result-card"><div>
+      <span>${p.icon} ${p.course}</span>
+      <h3>${p.n}</h3><p>${p.f}</p>
+      <p><b>Для подбора:</b> ${p.ask}</p>
+    </div><a href="${p.url}" target="_blank" rel="noopener">↗</a></article>`
+  ).join('') || '<p>Ничего не нашлось. Попробуй более общее слово.</p>';
+}
+
+// ─── Spaced Repetition Review ───
+
+function renderReview() {
+  const due = dueCards();
+  if (reviewOffset >= due.length) reviewOffset = 0;
+  const card = due[reviewOffset];
+
+  document.querySelector('#sessionDone').textContent = sessionDone;
+  document.querySelector('#sessionLeft').textContent = due.length;
+  const box = document.querySelector('#memoryCard');
+
+  if (!card) {
+    box.innerHTML = `<div class="memory-empty">
+      <img src="assets/misa-success.png" alt="Радостная Миса">
+      <h2>Сегодня всё!</h2>
+      <p>Следующие карточки появятся тогда, когда память начнёт их отпускать.</p>
+      <button class="neon-button" data-route="academy">Открыть новый маршрут</button>
+    </div>`;
+    return;
+  }
+
+  box.innerHTML = `
+    <span class="memory-tag">${card.course}</span>
+    <h2>${card.q}</h2>
+    <button class="reveal" id="revealCard">Показать ответ</button>
+    <div class="memory-controls">
+      <button id="skipCard">Пропустить сейчас</button>
+      <button id="suspendCard">Не показывать больше</button>
+    </div>`;
+
+  document.querySelector('#revealCard').onclick = () => revealCard(card);
+  document.querySelector('#skipCard').onclick = () => {
+    reviewOffset = (reviewOffset + 1) % due.length;
+    renderReview();
+  };
+  document.querySelector('#suspendCard').onclick = () => suspendCard(card);
+}
+
+function revealCard(card) {
+  document.querySelector('#memoryCard').innerHTML = `
+    <span class="memory-tag">${card.course}</span>
+    <h2>${card.q}</h2>
+    <div class="memory-answer">${card.a}</div>
+    <div class="grades">
+      <button data-grade="again">Не помню<br><small>10 мин</small></button>
+      <button data-grade="hard">Трудно<br><small>1 день</small></button>
+      <button data-grade="good">Знаю<br><small>неск. дней</small></button>
+      <button data-grade="easy">Легко<br><small>подальше</small></button>
+    </div>
+    <div class="memory-controls">
+      <button id="suspendCard">Не показывать больше</button>
+    </div>`;
+
+  document.querySelectorAll('[data-grade]').forEach(b =>
+    b.onclick = () => grade(card, b.dataset.grade)
+  );
+  document.querySelector('#suspendCard').onclick = () => suspendCard(card);
+}
+
+function suspendCard(card) {
+  state.reviews[card.id] = {...(state.reviews[card.id] || {}), suspended: true};
+  save();
+  toast('Вопрос убран из повторения');
+  renderReview();
+}
+
+function grade(card, g) {
+  const old = state.reviews[card.id] || {level: 0};
+  const level = Math.min(old.level || 0, 4);
+  const due = today();
+
+  if (g === 'again') {
+    due.setMinutes(due.getMinutes() + 10);
+  } else {
+    const intervals = {
+      hard: 1,
+      good: [2, 5, 12, 28, 60][level],
+      easy: [4, 10, 24, 60, 120][level]
+    };
+    due.setDate(due.getDate() + intervals[g]);
+  }
+
+  state.reviews[card.id] = {
+    level: g === 'again' ? 0 : level + 1,
+    due: due.toISOString(),
+    lastGrade: g
+  };
+  state.stats.answers++;
+  if (g === 'good' || g === 'easy') state.stats.confident++;
+  state.stats.xp += g === 'again' ? 1 : g === 'hard' ? 2 : 4;
+  sessionDone++;
+  reviewOffset = 0;
+  save();
+
+  if (sessionDone === 3) toast('Три честных ответа — хороший темп, Ирина');
+  renderReview();
+}
+
+// ─── Chat (Gemini client-side) ───
+
+function addMessage(type, text, id = '') {
+  const m = document.querySelector('#messages');
+  m.insertAdjacentHTML('beforeend',
+    `<div class="message ${type}" ${id ? `id="${id}` : ''}>
+      <b>${type === 'user' ? 'Ирина' : 'Миса'}</b>
+      <p>${esc(text)}</p>
+    </div>`
+  );
+  m.scrollTop = m.scrollHeight;
+}
+
+function renderChatSetup() {
+  const statusEl = document.querySelector('#apiStatus');
+  if (GeminiClient.hasKey()) {
+    statusEl.textContent = 'ключ установлен';
+  } else {
+    statusEl.textContent = 'нужен ключ Gemini';
+  }
+}
+
+function showKeyPrompt() {
+  const overlay = document.createElement('div');
+  overlay.className = 'key-overlay';
+  overlay.innerHTML = `
+    <div class="key-modal">
+      <h3>Настройка Gemini API</h3>
+      <p>Введи свой ключ Gemini API для работы чата с Мисой. Ключ хранится только в твоём браузере.</p>
+      <input id="keyInput" type="password" placeholder="Вставь ключ сюда..." autocomplete="off">
+      <div class="key-modal-buttons">
+        <button id="keySave" class="neon-button">Сохранить</button>
+        <button id="keyCancel" class="glass-button">Отмена</button>
+      </div>
+      <small>Получить ключ: <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a></small>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  document.querySelector('#keySave').onclick = () => {
+    const key = document.querySelector('#keyInput').value.trim();
+    if (key) {
+      GeminiClient.setKey(key);
+      toast('Ключ сохранён!');
+      renderChatSetup();
+      overlay.remove();
+    }
+  };
+  document.querySelector('#keyCancel').onclick = () => overlay.remove();
+  overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
+  document.querySelector('#keyInput').focus();
+}
+
+async function askMisa(text) {
+  if (!GeminiClient.hasKey()) {
+    showKeyPrompt();
+    return;
+  }
+
+  addMessage('user', text);
+  addMessage('bot loading', 'Думаю', 'chatLoading');
+  document.querySelector('#apiStatus').textContent = 'сообщение отправлено…';
+
+  try {
+    const courseId = document.querySelector('#chatContext').value;
+    const answer = await GeminiClient.sendMessage(text, courseId);
+    document.querySelector('#chatLoading')?.remove();
+    addMessage('bot', answer);
+    document.querySelector('#apiStatus').textContent = 'работает';
+  } catch (e) {
+    document.querySelector('#chatLoading')?.remove();
+    addMessage('bot', e.message);
+    document.querySelector('#apiStatus').textContent = 'ошибка — проверь ключ';
+  }
+}
+
+// ─── Event Listeners ───
+
+document.addEventListener('click', e => {
+  const r = e.target.closest('[data-route]');
+  if (r) { e.preventDefault(); route(r.dataset.route, r.dataset.course); return; }
+
+  const c = e.target.closest('[data-course]');
+  if (c) { route('course', c.dataset.course); return; }
+
+  const tab = e.target.closest('[data-tab]');
+  if (tab) { currentTab = tab.dataset.tab; renderCourse(); return; }
+
+  const complete = e.target.closest('[data-complete]');
+  if (complete) { completeCourse(complete.dataset.complete); return; }
+
+  const answer = e.target.closest('[data-case]');
+  if (answer) {
+    const buttons = [...document.querySelectorAll('[data-case]')];
+    buttons.forEach(b => b.disabled = true);
+    const ok = Number(answer.dataset.case) === currentCourse.caseAnswer;
+    answer.classList.add(ok ? 'correct' : 'wrong');
+    if (!ok) buttons[currentCourse.caseAnswer].classList.add('correct');
+    document.querySelector('#caseFeedback').textContent = ok
+      ? 'Верно. Ты запросила данные, которые действительно различают детали.'
+      : 'Лучший ответ выделен зелёным: он проверяет совместимость, а не угадывает.';
+    if (ok) { state.stats.xp += 5; save(); toast('Верный вопрос покупателю +5 XP'); }
+    return;
+  }
+
+  const world = e.target.closest('[data-world]');
+  if (world) { route('academy'); return; }
+});
+
+document.querySelectorAll('.filter-row button').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('.filter-row button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    renderAcademy(b.dataset.filter);
+  };
+});
+
+document.querySelector('#partSearch').addEventListener('input', e => renderSearch(e.target.value));
+document.querySelector('#partSearch').addEventListener('keydown', e => {
+  if (e.key === 'Escape') { e.target.value = ''; renderSearch(); e.target.blur(); }
+});
+
+document.querySelector('#continueButton').onclick = () => route('course', state.lastCourse || 'washer');
+document.querySelector('#menuButton').onclick = () => document.querySelector('#sidebar').classList.add('open');
+document.querySelector('#sideClose').onclick = () => document.querySelector('#sidebar').classList.remove('open');
+
+document.querySelector('#resetProgress').onclick = () => {
+  if (confirm('Вернуть все вопросы и удалить учебный прогресс?')) {
+    localStorage.removeItem(STORE);
+    state = loadState();
+    sessionDone = 0;
+    renderReview();
+    updateStats();
+  }
+};
+
+// Chat context dropdown
+document.querySelector('#chatContext').innerHTML =
+  '<option value="general">Общий вопрос</option>' +
+  COURSES.map(c => `<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
+
+// Chat form
+document.querySelector('#chatForm').onsubmit = e => {
+  e.preventDefault();
+  const i = document.querySelector('#chatInput');
+  const text = i.value.trim();
+  if (text) { i.value = ''; askMisa(text); }
+};
+
+// Quick questions
+document.querySelectorAll('#quickList button').forEach(b => {
+  b.onclick = () => askMisa(b.textContent);
+});
+
+// Clear chat
+document.querySelector('#clearChat').onclick = () => {
+  GeminiClient.clearHistory();
+  document.querySelector('#messages').innerHTML =
+    '<div class="message bot"><b>Миса</b><p>Начинаем новую тему. Что разберём?</p></div>';
+};
+
+// API key setup button — add to chat sidebar
+const keyBtn = document.createElement('button');
+keyBtn.className = 'glass-button key-setup-btn';
+keyBtn.textContent = 'Настроить ключ Gemini';
+keyBtn.onclick = showKeyPrompt;
+const chatAbout = document.querySelector('.chat-about');
+if (chatAbout) chatAbout.appendChild(keyBtn);
+
+// ─── Init ───
+
+renderAcademy();
+renderSearch();
+updateStats();
+
+const hash = location.hash.slice(1);
+if (hash.startsWith('course/')) route('course', hash.split('/')[1]);
+else route(['home','academy','search','review','chat'].includes(hash) ? hash : 'home');
+
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  navigator.serviceWorker.register('service-worker.js').catch(() => {});
+}
