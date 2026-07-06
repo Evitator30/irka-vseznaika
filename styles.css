@@ -81,3 +81,132 @@
   .profile-pill{font-size:14px}
   .toast{font-size:14px;padding:12px 20px}
 }
+
+/* ─── Wiki page styles ─── */
+.wiki-page{max-width:800px;margin:0 auto}
+.wiki-header{display:flex;align-items:center;gap:16px;margin-bottom:28px}
+.wiki-icon{font-size:48px}
+.wiki-course{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.wiki-header h1{margin:4px 0 0;font-family:Unbounded,sans-serif;font-size:26px}
+.wiki-section{background:var(--paper);border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:var(--shadow)}
+.wiki-section h2{margin:0 0 12px;font-size:18px}
+.wiki-simple p{font-size:16px;line-height:1.65;color:var(--ink)}
+.wiki-technical p{font-size:14px;line-height:1.6;color:var(--muted)}
+.wiki-system p{font-size:15px}
+.wiki-connects{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.wiki-connects>span{font-size:12px;color:var(--muted)}
+.wiki-tag{background:var(--line);padding:4px 10px;border-radius:8px;font-size:12px;font-weight:600}
+.wiki-breakdown{padding:12px 0;border-bottom:1px solid var(--line)}
+.wiki-breakdown:last-child{border-bottom:none}
+.wiki-breakdown h3{margin:0 0 4px;font-size:15px;color:var(--purple)}
+.wiki-breakdown p{margin:0;font-size:13px;color:var(--muted)}
+.wiki-ask{background:linear-gradient(135deg,#faf5ff,#f0f9ff);border:1px solid var(--line);border-radius:12px;padding:16px;font-size:14px;line-height:1.6}
+.wiki-links{display:flex;gap:10px;flex-wrap:wrap}
+.wiki-link{cursor:pointer;color:var(--purple);text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px}
+.wiki-link:hover{color:var(--purple2)}
+
+/* ─── Knowledge Base styles ─── */
+.kb-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.kb-tabs button{padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--paper);font-size:13px;cursor:pointer;transition:.15s}
+.kb-tabs button.active{background:var(--purple);color:white;border-color:var(--purple)}
+.kb-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.kb-icon{font-size:36px}
+.kb-header h1{margin:0;font-family:Unbounded,sans-serif;font-size:22px}
+.kb-section{background:var(--paper);border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:var(--shadow)}
+.kb-section h2{margin:0 0 14px;font-size:18px}
+.kb-intro{color:var(--muted);font-size:13px;margin:0 0 16px}
+.kb-breakdown-card{border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:10px}
+.kb-breakdown-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.kb-breakdown-head b{font-size:15px}
+.kb-pct{background:var(--purple);color:white;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700}
+.kb-symptoms,.kb-cause-text,.kb-price-text,.kb-fix{margin:4px 0;font-size:13px}
+.kb-tip-seller{background:#faf5ff;border-radius:8px;padding:8px 12px;margin-top:8px;font-size:13px}
+.kb-diag-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}
+.kb-diag-symptom{font-weight:600;color:var(--purple)}
+.kb-diag-cause{color:var(--muted)}
+.kb-diag-action{color:var(--ink)}
+.kb-brand-row{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}
+.kb-brand-row b{font-weight:600}
+.kb-brand-row small{color:var(--muted)}
+.kb-type-row{padding:10px 0;border-bottom:1px solid var(--line)}
+.kb-type-row b{font-size:15px}
+.kb-type-row p{margin:4px 0;font-size:13px}
+.kb-type-row small{color:var(--muted);font-size:12px}
+.kb-decision{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.kb-repair{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:16px}
+.kb-replace{background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:16px}
+.kb-repair h3,.kb-replace h3{margin:0 0 8px;font-size:15px}
+.kb-repair p,.kb-replace p{margin:0;font-size:13px;line-height:1.5}
+.kb-prevention{list-style:none;padding:0;margin:0}
+.kb-prevention li{padding:8px 0;border-bottom:1px solid var(--line);font-size:14px;line-height:1.5}
+.kb-prevention li::before{content:'✓ ';color:var(--lime);font-weight:700}
+.kb-safety{background:#fef2f2;border:1px solid #fecaca}
+.kb-safety h2{color:#dc2626}
+.kb-safety p{font-size:14px;line-height:1.5}
+@media(max-width:760px){
+  .wiki-header h1{font-size:22px}
+  .wiki-section{padding:18px}
+  .kb-diag-row{grid-template-columns:1fr;gap:4px}
+  .kb-brand-row{grid-template-columns:1fr;gap:4px}
+  .kb-decision{grid-template-columns:1fr}
+  .wiki-connects{flex-direction:column;align-items:flex-start}
+}
+
+/* ─── Knowledge Base ─── */
+.knowledge-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.knowledge-tabs button{padding:10px 16px;border:1px solid var(--line);background:var(--paper);border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;transition:.2s}
+.knowledge-tabs button.active{background:var(--purple);color:white;border-color:var(--purple)}
+.knowledge-tabs button:hover:not(.active){background:var(--line)}
+.knowledge-content{display:flex;flex-direction:column;gap:28px}
+.kb-section{background:var(--paper);border-radius:16px;padding:24px;box-shadow:var(--shadow)}
+.kb-section h2{font-family:Unbounded,sans-serif;font-size:20px;margin:0 0 16px;color:var(--ink)}
+.kb-intro{color:var(--muted);font-size:14px;margin:0 0 20px;line-height:1.5}
+.kb-diagnostic{border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
+.kb-diagnostic h3{margin:0 0 12px;font-size:17px;color:var(--purple)}
+.kb-causes{display:flex;flex-direction:column;gap:10px}
+.kb-cause{background:var(--bg);border-radius:10px;padding:12px 14px;border-left:3px solid var(--line)}
+.kb-cause.kb-hot{border-left-color:#ef4444;background:#fef2f2}
+.kb-cause.kb-warm{border-left-color:var(--orange);background:#fff7ed}
+.kb-cause-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.kb-cause-head b{flex:1;min-width:120px}
+.kb-probability{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--line);color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.kb-hot .kb-probability{background:#fee2e2;color:#dc2626}
+.kb-warm .kb-probability{background:#ffedd5;color:#ea580c}
+.kb-price{font-size:13px;color:var(--muted);font-weight:600;white-space:nowrap}
+.kb-cause p{margin:4px 0;font-size:13px;color:var(--ink)}
+.kb-cause small{font-size:12px;color:var(--muted);line-height:1.4}
+.kb-tip{margin-top:12px;padding:12px 14px;background:#f0fdf4;border-radius:10px;font-size:13px;line-height:1.5;border:1px solid #bbf7d0}
+.kb-brands{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.kb-brand{background:var(--bg);border-radius:10px;padding:14px}
+.kb-brand b{display:block;font-size:14px;margin-bottom:4px}
+.kb-brand p{margin:0;font-size:13px;color:var(--muted);line-height:1.4}
+.kb-types{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.kb-type{background:var(--bg);border-radius:10px;padding:14px}
+.kb-type b{display:block;font-size:14px;margin-bottom:4px}
+.kb-type p{margin:0;font-size:13px;color:var(--muted);line-height:1.4}
+.kb-decision{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.kb-repair,.kb-replace{border-radius:12px;padding:16px}
+.kb-repair{background:#f0fdf4;border:1px solid #bbf7d0}
+.kb-replace{background:#fef2f2;border:1px solid #fecaca}
+.kb-repair h3,.kb-replace h3{margin:0 0 8px;font-size:15px}
+.kb-repair p,.kb-replace p{margin:0;font-size:13px;line-height:1.5}
+.kb-rule{margin-top:14px;padding:12px 14px;background:var(--bg);border-radius:10px;font-size:14px;font-weight:600;text-align:center}
+.kb-maintenance{margin:0;padding-left:20px}
+.kb-maintenance li{margin-bottom:8px;font-size:14px;line-height:1.5}
+.kb-prices{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.kb-price-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg);border-radius:8px;font-size:13px}
+.kb-price-row span{color:var(--muted)}
+.kb-price-row b{color:var(--ink);white-space:nowrap}
+.kb-safety{border:2px solid #fbbf24;background:#fffbeb}
+.kb-safety h2{color:#b45309}
+.kb-safety p{font-size:14px;line-height:1.6}
+
+@media(max-width:760px){
+  .kb-decision{grid-template-columns:1fr}
+  .kb-brands,.kb-types,.kb-prices{grid-template-columns:1fr}
+  .knowledge-tabs button{font-size:12px;padding:8px 12px}
+  .kb-section{padding:18px}
+  .kb-section h2{font-size:18px}
+  .kb-diagnostic h3{font-size:15px}
+  .kb-cause-head{flex-direction:column;align-items:flex-start;gap:4px}
+}

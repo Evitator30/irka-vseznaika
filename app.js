@@ -42,6 +42,29 @@ function save() {
   updateStats();
 }
 
+// ─── Wiki helpers ───
+
+const WIKI_NAME_MAP = {
+  'Заливной клапан':'zalivnoy-klapan','Прессостат':'pressostat','ТЭН':'ten-stiralnoy',
+  'Помпа':'pompa-stiralnoy','УБЛ':'ubl','Ремень':'remen','Амортизатор':'amortizator',
+  'Манжета люка':'manzheta','Уплотнитель':'uplotnitel','Термостат':'termostat',
+  'Компрессор':'kompressor','Пускозащитное реле':'rele-puska','Датчик NTC':'datchik-ntc',
+  'ТЭН оттайки':'ten-ottayki','Вентилятор':'ventilyator-holodilnika',
+  'Циркуляционный насос':'tsirkulyacionny-nasos','Разбрызгиватель':'razbryzgivatel',
+  'Свеча розжига':'svecha-rozzhiga','Термопара':'termopara','ТЭН духовки':'ten-duhovki',
+  'ТЭН':'ten-bojlera','Магниевый анод':'anod','Мотор-турбина':'motor-pylesosa',
+  'HEPA-фильтр':'filtr-hepa','Компрессор кондиционера':'kompressor-kondicionera',
+  'Дренажный насос':'drenazhny-nasos','Крыльчатка':'krylchatka',
+  'Мотор вытяжки':'dvigatel-vytyazhki','Угольный фильтр':'ugolniy-filtr'
+};
+
+function findWikiKey(partName, courseId) {
+  for (const [name, key] of Object.entries(WIKI_NAME_MAP)) {
+    if (partName.includes(name)) return key;
+  }
+  return null;
+}
+
 // ─── Helpers ───
 
 function esc(s) {
@@ -96,6 +119,8 @@ function route(name, id) {
   if (name === 'academy') renderAcademy();
   if (name === 'review') { reviewOffset = 0; renderReview(); }
   if (name === 'search') renderSearch();
+  if (name === 'knowledge') renderKnowledgeBase();
+  if (name === 'wiki') renderWiki();
   if (name === 'chat') renderChatSetup();
   history.replaceState(null, '', name === 'course' ? `#course/${currentCourse.id}` : `#${name}`);
   window.scrollTo({top:0, behavior:'smooth'});
@@ -161,7 +186,8 @@ function renderCourse() {
     ['principle','1. Как работает'],
     ['systems','2. Карта систем'],
     ['parts','3. Детали ZIP161'],
-    ['practice','4. Практика продавца']
+    ['diagnostics','4. Диагностика'],
+    ['practice','5. Практика продавца']
   ];
   document.querySelector('#courseContent').innerHTML = `
     <section class="course-hero" style="--accent:${c.color}">
@@ -213,16 +239,74 @@ function renderCourseTab() {
     html = `<article class="lesson-panel">
       <span class="kicker"><i></i> Связь с каталогом</span>
       <h2>Детали и ключи подбора</h2>
-      <p class="lesson-lead">Функция объясняет, зачем деталь существует. Колонка «что спросить» защищает от неверной продажи.</p>
-      <div class="part-table">${c.parts.map(p =>
-        `<div class="part-row"><h3>${p.n}</h3><p>${p.f}</p><p class="ask"><b>Спросить:</b> ${p.ask}</p><a href="${p.url}" target="_blank" rel="noopener" title="Открыть ZIP161">↗</a></div>`
-      ).join('')}</div>
+      <p class="lesson-lead">Функция объясняет, зачем деталь существует. Колонка «что спросить» защищает от неверной продажи. Нажми на название детали — откроется вики.</p>
+      <div class="part-table">${c.parts.map(p => {
+        const wikiKey = findWikiKey(p.n, c.id);
+        const wikiLink = wikiKey ? `data-wiki="${wikiKey}"` : '';
+        return `<div class="part-row"><h3 ${wikiLink} class="${wikiKey ? 'wiki-link' : ''}">${p.n}</h3><p>${p.f}</p><p class="ask"><b>Спросить:</b> ${p.ask}</p><a href="${p.url}" target="_blank" rel="noopener" title="Открыть ZIP161">↗</a></div>`;
+      }).join('')}</div>
       <div class="zip-example">
         <strong>${c.example.sku}</strong>
         <div><h3>${c.example.name}</h3><p>${c.example.note}</p></div>
         <a href="${c.example.url}" target="_blank" rel="noopener">Открыть ZIP161 ↗</a>
       </div>
       ${courseFooter()}</article>`;
+  }
+
+  if (currentTab === 'diagnostics') {
+    const kb = window.KNOWLEDGE_BASE && window.KNOWLEDGE_BASE[c.id];
+    if (kb && kb.diagnostics) {
+      html = `<article class="lesson-panel">
+        <span class="kicker"><i></i> Что говорит покупатель</span>
+        <h2>Диагностика по симптомам</h2>
+        <p class="lesson-lead">Покупатель описывает проблему. Ты предполагаешь причину и предлагаешь нужную деталь. Чем точнее вопрос — тем быстрее подбор.</p>
+        ${kb.diagnostics.map(d => `
+          <div class="kb-diagnostic">
+            <h3>«${d.symptom}»</h3>
+            <div class="kb-causes">${d.causes.map(c => `
+              <div class="kb-cause ${c.probability === 'очень высокая' ? 'kb-hot' : c.probability === 'высокая' ? 'kb-warm' : ''}">
+                <div class="kb-cause-head">
+                  <span class="kb-probability">${c.probability}</span>
+                  <b>${c.name}</b>
+                  <span class="kb-price">${c.price}</span>
+                </div>
+                <p>Предложить: <strong>${c.part}</strong></p>
+                <small>${c.note}</small>
+              </div>
+            `).join('')}</div>
+            <div class="kb-tip">💬 <b>Продавцу:</b> ${d.tip}</div>
+          </div>
+        `).join('')}
+        ${kb.repairOrReplace ? `
+          <div class="kb-section" style="margin-top:20px">
+            <h2>⚖️ Ремонт или замена?</h2>
+            <div class="kb-decision">
+              <div class="kb-repair"><h3>✅ Ремонтировать</h3><p>${kb.repairOrReplace.repair}</p></div>
+              <div class="kb-replace"><h3>🔄 Заменить</h3><p>${kb.repairOrReplace.replace}</p></div>
+            </div>
+            <div class="kb-rule">📏 ${kb.repairOrReplace.rule}</div>
+          </div>` : ''}
+        ${kb.maintenance ? `
+          <div class="kb-section" style="margin-top:20px">
+            <h2>🛡️ Профилактика (совет покупателю)</h2>
+            <ul class="kb-maintenance">${kb.maintenance.map(m => `<li>${m}</li>`).join('')}</ul>
+          </div>` : ''}
+        ${kb.prices ? `
+          <div class="kb-section" style="margin-top:20px">
+            <h2>💰 Типичные цены</h2>
+            <div class="kb-prices">${Object.entries(kb.prices).map(([k, v]) =>
+              `<div class="kb-price-row"><span>${k}</span><b>${v}</b></div>`
+            ).join('')}</div>
+          </div>` : ''}
+        ${kb.safety ? `<div class="kb-section kb-safety" style="margin-top:20px"><h2>⚠️ Безопасность</h2><p>${kb.safety}</p></div>` : ''}
+        ${courseFooter()}</article>`;
+    } else {
+      html = `<article class="lesson-panel">
+        <span class="kicker"><i></i> Диагностика</span>
+        <h2>Раздел в разработке</h2>
+        <p class="lesson-lead">Для этого прибора пока нет данных по диагностике. Откройте «База знаний» в меню слева.</p>
+        ${courseFooter()}</article>`;
+    }
   }
 
   if (currentTab === 'practice') {
@@ -291,6 +375,166 @@ function renderSearch(query = '') {
       <p><b>Для подбора:</b> ${p.ask}</p>
     </div><a href="${p.url}" target="_blank" rel="noopener">↗</a></article>`
   ).join('') || '<p>Ничего не нашлось. Попробуй более общее слово.</p>';
+}
+
+// ─── Wiki (энциклопедия деталей) ───
+
+let currentWikiKey = '';
+
+function renderWiki(wikiKey) {
+  if (wikiKey) currentWikiKey = wikiKey;
+  const entry = WIKI[currentWikiKey];
+  if (!entry) { document.querySelector('#wikiContent').innerHTML = '<p>Деталь не найдена.</p>'; return; }
+
+  let html = `<article class="wiki-page">
+    <div class="wiki-header">
+      <span class="wiki-icon">${entry.icon}</span>
+      <div><span class="wiki-course">${entry.courseName}</span><h1>${entry.name}</h1></div>
+    </div>
+
+    <div class="wiki-section wiki-simple">
+      <span class="kicker"><i></i> Простыми словами</span>
+      <p>${entry.simple}</p>
+    </div>
+
+    <div class="wiki-section wiki-technical">
+      <span class="kicker"><i></i> Как устроено технически</span>
+      <p>${entry.technical}</p>
+    </div>
+
+    <div class="wiki-section wiki-system">
+      <span class="kicker"><i></i> В какой системе работает</span>
+      <p><b>${entry.system}</b></p>
+      <div class="wiki-connects"><span>Связано с:</span> ${entry.connects.map(c => `<span class="wiki-tag">${c}</span>`).join(' ')}</div>
+    </div>
+
+    <div class="wiki-section wiki-breakdowns">
+      <span class="kicker"><i></i> Что ломается и почему</span>
+      ${entry.breakdowns.map(b => `
+        <div class="wiki-breakdown">
+          <h3>«${b.symptom}»</h3>
+          <p><b>Причина:</b> ${b.cause}</p>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="wiki-section wiki-seller">
+      <span class="kicker"><i></i> Что спросить у покупателя</span>
+      <div class="wiki-ask">${entry.ask}</div>
+    </div>
+
+    <div class="wiki-section wiki-links">
+      <a href="${entry.zip161}" target="_blank" rel="noopener" class="neon-button">Открыть в каталоге ZIP161 ↗</a>
+      <button class="glass-button" data-route="course" data-course="${entry.course}">← Вернуться к уроку</button>
+    </div>
+  </article>`;
+
+  document.querySelector('#wikiContent').innerHTML = html;
+}
+
+// ─── Knowledge Base (справочник продавца) ───
+
+let currentKBKey = 'washer';
+
+function renderKnowledgeBase(key) {
+  if (key) currentKBKey = key;
+  const kb = window.KNOWLEDGE_BASE;
+  if (!kb) return;
+
+  const tabMap = {
+    washer:'🫧 Стиралка', fridge:'❄️ Холодильник', dishwasher:'🍽️ Посудомойка',
+    oven:'♨️ Плиты', heater:'🚿 Бойлер', vacuum:'🌪️ Пылесос',
+    conditioner:'🌬️ Кондиционер', dryer:'🌀 Сушилка', small:'☕ Мелкая',
+    boiler:'🔥 Котлы', hood:'💨 Вытяжка'
+  };
+
+  const tabsEl = document.querySelector('#knowledgeTabs');
+  if (tabsEl) {
+    tabsEl.innerHTML = Object.entries(tabMap).map(([k, v]) =>
+      `<button class="${k === currentKBKey ? 'active' : ''}" data-kb="${k}">${v}</button>`
+    ).join('');
+    document.querySelectorAll('[data-kb]').forEach(b => {
+      b.onclick = () => renderKnowledgeBase(b.dataset.kb);
+    });
+  }
+
+  const data = kb[currentKBKey];
+  if (!data) { const el = document.querySelector('#knowledgeContent'); if (el) el.innerHTML = '<p>Раздел в разработке.</p>'; return; }
+
+  let html = `<div class="kb-header"><span class="kb-icon">${data.icon}</span><h1>${data.name}</h1></div>`;
+
+  // Top breakdowns
+  if (data.topBreakdowns && data.topBreakdowns.length) {
+    html += `<div class="kb-section"><h2>🔧 Топ поломок</h2>`;
+    data.topBreakdowns.forEach(b => {
+      html += `<div class="kb-breakdown-card">
+        <div class="kb-breakdown-head"><b>${b.name}</b><span class="kb-pct">${b.pct}</span></div>
+        <p class="kb-symptoms"><b>Симптомы:</b> ${b.symptoms}</p>
+        <p class="kb-cause-text"><b>Причина:</b> ${b.cause}</p>
+        <p class="kb-price-text"><b>Цена:</b> ${b.price}</p>
+        <p class="kb-fix"><b>Решение:</b> ${b.fix}</p>
+        <p class="kb-tip-seller">💬 <b>Продавцу:</b> ${b.sellerTip}</p>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  // Diagnostics
+  if (data.diagnostics && data.diagnostics.length) {
+    html += `<div class="kb-section"><h2>🔍 Диагностика</h2>
+      <p class="kb-intro">Покупатель описывает проблему → ты предполагаешь причину → предлагаешь деталь.</p>`;
+    data.diagnostics.forEach(d => {
+      html += `<div class="kb-diag-row">
+        <span class="kb-diag-symptom">${d[0]}</span>
+        <span class="kb-diag-cause">${d[1]}</span>
+        <span class="kb-diag-action">${d[2]}</span>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  // Brands
+  if (data.brands && data.brands.length) {
+    html += `<div class="kb-section"><h2>🏭 Совместимость брендов</h2>`;
+    data.brands.forEach(b => {
+      html += `<div class="kb-brand-row"><b>${b[0]}</b><span>${b[1]}</span><small>${b[2]}</small></div>`;
+    });
+    html += '</div>';
+  }
+
+  // Types
+  if (data.types && data.types.length) {
+    html += `<div class="kb-section"><h2>📐 Типы техники</h2>`;
+    data.types.forEach(t => {
+      html += `<div class="kb-type-row"><b>${t[0]}</b><p>${t[1]}</p><small>${t[2]}</small></div>`;
+    });
+    html += '</div>';
+  }
+
+  // Repair or replace
+  if (data.repairOrReplace) {
+    const r = data.repairOrReplace;
+    html += `<div class="kb-section"><h2>⚖️ Ремонт или замена?</h2>
+      <div class="kb-decision">
+        <div class="kb-repair"><h3>Ремонтировать</h3><p>${r.repair}</p></div>
+        <div class="kb-replace"><h3>Заменить</h3><p>${r.replace}</p></div>
+      </div></div>`;
+  }
+
+  // Prevention
+  if (data.prevention && data.prevention.length) {
+    html += `<div class="kb-section"><h2>🛡️ Профилактика</h2><ul class="kb-prevention">`;
+    data.prevention.forEach(p => { html += `<li>${p}</li>`; });
+    html += '</ul></div>';
+  }
+
+  // Safety
+  if (data.safety) {
+    html += `<div class="kb-section kb-safety"><h2>⚠️ Безопасность</h2><p>${data.safety}</p></div>`;
+  }
+
+  const el = document.querySelector('#knowledgeContent');
+  if (el) el.innerHTML = html;
 }
 
 // ─── Spaced Repetition Review ───
@@ -497,6 +741,9 @@ document.addEventListener('click', e => {
 
   const world = e.target.closest('[data-world]');
   if (world) { route('academy'); return; }
+
+  const wiki = e.target.closest('[data-wiki]');
+  if (wiki) { route('wiki'); renderWiki(wiki.dataset.wiki); return; }
 });
 
 document.querySelectorAll('.filter-row button').forEach(b => {
@@ -567,7 +814,7 @@ updateStats();
 
 const hash = location.hash.slice(1);
 if (hash.startsWith('course/')) route('course', hash.split('/')[1]);
-else route(['home','academy','search','review','chat'].includes(hash) ? hash : 'home');
+else route(['home','academy','search','knowledge','wiki','review','chat'].includes(hash) ? hash : 'home');
 
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('service-worker.js').catch(() => {});

@@ -20,6 +20,7 @@
         <button data-route="home" class="active"><span>✦</span>Сегодня</button>
         <button data-route="academy"><span>◈</span>Академия <em>11</em></button>
         <button data-route="search"><span>⌕</span>Справочник</button>
+        <button data-route="knowledge"><span>📋</span>База знаний</button>
         <button data-route="review"><span>↻</span>Повторение <em id="dueBadge">0</em></button>
         <button data-route="chat"><span>◌</span>Спросить Мису</button>
       </nav>
@@ -82,9 +83,20 @@
         <div class="search-count" id="searchCount"></div><div class="part-results" id="partResults"></div>
       </section>
 
+      <section class="page" id="page-knowledge">
+        <div class="page-head"><div><span class="kicker"><i></i> Полная база</span><h1>База знаний продавца</h1><p>Диагностика по симптомам, что предлагать покупателю, цены, совместимость брендов, «ремонт или замена».</p></div></div>
+        <div class="knowledge-tabs" id="knowledgeTabs"></div>
+        <div class="knowledge-content" id="knowledgeContent"></div>
+      </section>
+
       <section class="page" id="page-review">
         <div class="review-top"><div><span class="kicker"><i></i> Интервальное повторение</span><h1>Мозгу — главное,<br>лишнему — выход</h1><p>Вопрос можно отложить или убрать навсегда. Здесь нет наказания за «не помню» — это команда показать карточку раньше.</p></div><img src="assets/misa-thinking.png" alt="Задумавшаяся Миса"></div>
         <div class="review-shell"><div class="memory-card" id="memoryCard"></div><aside><h3>Сессия</h3><div class="session-ring"><b id="sessionDone">0</b><span>ответов</span></div><p><b id="sessionLeft">0</b> осталось сейчас</p><div class="legend"><span><i class="red"></i>10 минут</span><span><i class="orange"></i>1 день</span><span><i class="cyan"></i>несколько дней</span></div><button id="resetProgress" class="danger-link">Сбросить прогресс</button></aside></div>
+      </section>
+
+      <section class="page" id="page-wiki">
+        <button class="back-button" data-route="academy">← Назад</button>
+        <div id="wikiContent"></div>
       </section>
 
       <section class="page" id="page-chat">
@@ -94,6 +106,8 @@
   </div>
   <div class="toast" id="toast"></div>
   <script src="course-data.js"></script>
+  <script src="knowledge-base.js"></script>
+  <script src="wiki-data.js"></script>
   <script src="gemini-client.js"></script>
   <script src="app.js"></script>
 </body>
