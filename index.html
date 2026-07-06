@@ -23,7 +23,6 @@
         <button data-route="knowledge"><span>📋</span>База знаний</button>
         <button data-route="wiki" id="wikiNavBtn"><span>📖</span>Вики деталей</button>
         <button data-route="review"><span>↻</span>Повторение <em id="dueBadge">0</em></button>
-        <button data-route="chat"><span>◌</span>Спросить Мису</button>
       </nav>
       <div class="side-misa"><img src="assets/misa-thinking.png" alt="Миса"><p>Не угадываем.<br><b>Проверяем!</b></p></div>
       <div class="side-foot"><span class="signal"></span> Прогресс хранится на этом устройстве</div>
@@ -100,23 +99,12 @@
         <div id="wikiContent"></div>
       </section>
 
-      <section class="page" id="page-chat">
-        <div class="chat-layout"><aside class="chat-about"><img src="assets/misa-lecturer.png" alt="Миса"><span class="kicker"><i></i> ИИ-наставница</span><h1>Спросить Мису</h1><p>Она объяснит принцип, свяжет деталь с соседними узлами и не подтвердит совместимость без данных.</p><div class="chat-status"><span></span><b>Gemini 3.1 Flash Lite</b><small id="apiStatus">нужен ключ Gemini</small></div></aside><div class="chat-panel"><div class="chat-toolbar"><select id="chatContext"><option value="general">Общий вопрос</option></select><button id="clearChat">Очистить</button></div><div class="quick-list" id="quickList"><button>Объясни разницу между термостатом и датчиком</button><button>Какие данные нужны для подбора ТЭНа?</button><button>Проверь меня по стиральной машине</button></div><div class="messages" id="messages"><div class="message bot"><b>Миса</b><p>Привет, Ирина! Я готова разбирать детали по-взрослому, но простыми образами. Выбери прибор сверху или задай общий вопрос.</p></div></div><form id="chatForm"><textarea id="chatInput" maxlength="1500" rows="1" placeholder="Например: почему у помпы важна улитка?"></textarea><button type="submit">↑</button></form><small class="chat-note">Данные отправляются напрямую в Gemini API. Ключ хранится только в твоём браузере.</small>
-        <div class="chat-notice">
-          <b>Памятка Ирине</b>
-          <p>Нашла ошибку? Напиши: <code>Ошибка: [что не так]</code></p>
-          <p>Узнала что-то новое? Напиши: <code>Дополнение: [что узнала]</code></p>
-          <p><a href="https://github.com/Evitator30/irka-vseznaika/blob/master/errors.md" target="_blank">Ошибки ↗</a> · <a href="https://github.com/Evitator30/irka-vseznaika/blob/master/additions.md" target="_blank">Дополнения ↗</a></p>
-        </div></div></div>
-      </section>
     </main>
   </div>
   <div class="toast" id="toast"></div>
   <script src="course-data.js"></script>
   <script src="knowledge-base.js"></script>
   <script src="wiki-data.js"></script>
-  <script src="gemini-client.js"></script>
-  <script src="github-client.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

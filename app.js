@@ -121,7 +121,6 @@ function route(name, id) {
   if (name === 'search') renderSearch();
   if (name === 'knowledge') renderKnowledgeBase();
   if (name === 'wiki') renderWiki();
-  if (name === 'chat') renderChatSetup();
   history.replaceState(null, '', name === 'course' ? `#course/${currentCourse.id}` : `#${name}`);
   window.scrollTo({top:0, behavior:'smooth'});
 }
@@ -667,138 +666,6 @@ function grade(card, g) {
   renderReview();
 }
 
-// ─── Chat (Gemini client-side) ───
-
-function addMessage(type, text, id = '') {
-  const m = document.querySelector('#messages');
-  m.insertAdjacentHTML('beforeend',
-    `<div class="message ${type}" ${id ? `id="${id}` : ''}>
-      <b>${type === 'user' ? 'Ирина' : 'Миса'}</b>
-      <p>${esc(text)}</p>
-    </div>`
-  );
-  m.scrollTop = m.scrollHeight;
-}
-
-function renderChatSetup() {
-  const statusEl = document.querySelector('#apiStatus');
-  if (GeminiClient.hasKey()) {
-    statusEl.textContent = 'ключ установлен';
-  } else {
-    statusEl.textContent = 'нужен ключ Gemini';
-  }
-}
-
-function showKeyPrompt() {
-  const overlay = document.createElement('div');
-  overlay.className = 'key-overlay';
-  overlay.innerHTML = `
-    <div class="key-modal">
-      <h3>Настройка Gemini API</h3>
-      <p>Введи свой ключ Gemini API для работы чата с Мисой. Ключ хранится только в твоём браузере.</p>
-      <input id="keyInput" type="password" placeholder="Вставь ключ сюда..." autocomplete="off">
-      <div class="key-modal-buttons">
-        <button id="keySave" class="neon-button">Сохранить</button>
-        <button id="keyCancel" class="glass-button">Отмена</button>
-      </div>
-      <small>Получить ключ: <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a></small>
-    </div>`;
-  document.body.appendChild(overlay);
-
-  document.querySelector('#keySave').onclick = () => {
-    const key = document.querySelector('#keyInput').value.trim();
-    if (key) {
-      GeminiClient.setKey(key);
-      toast('Ключ сохранён!');
-      renderChatSetup();
-      overlay.remove();
-    }
-  };
-  document.querySelector('#keyCancel').onclick = () => overlay.remove();
-  overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
-  document.querySelector('#keyInput').focus();
-}
-
-function showGitHubPrompt() {
-  const overlay = document.createElement('div');
-  overlay.className = 'key-overlay';
-  overlay.innerHTML = `
-    <div class="key-modal">
-      <h3>Настройка GitHub</h3>
-      <p>Введи персональный токен GitHub (scope: repo) для отправки ошибок и дополнений.</p>
-      <input id="ghTokenInput" type="password" placeholder="ghp_xxxx..." autocomplete="off">
-      <div class="key-modal-buttons">
-        <button id="ghTokenSave" class="neon-button">Сохранить</button>
-        <button id="ghTokenCancel" class="glass-button">Отмена</button>
-      </div>
-      <small>Создать токен: <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">GitHub Settings → Tokens</a> (нужен scope: repo)</small>
-    </div>`;
-  document.body.appendChild(overlay);
-
-  document.querySelector('#ghTokenSave').onclick = () => {
-    const token = document.querySelector('#ghTokenInput').value.trim();
-    if (token) {
-      GitHubClient.setToken(token);
-      toast('GitHub токен сохранён!');
-      overlay.remove();
-    }
-  };
-  document.querySelector('#ghTokenCancel').onclick = () => overlay.remove();
-  overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
-  document.querySelector('#ghTokenInput').focus();
-}
-
-async function askMisa(text) {
-  addMessage('user', text);
-
-  // Check for special commands: Ошибка / Дополнение
-  const errorMatch = text.match(/^ошибка[:\s]+(.+)/i);
-  const additionMatch = text.match(/^дополнение[:\s]+(.+)/i);
-
-  if (errorMatch || additionMatch) {
-    if (!GitHubClient.hasToken()) {
-      addMessage('bot', 'Для отправки в репозиторий нужен GitHub токен. Нажми «Настроить GitHub» в памятке ниже.');
-      return;
-    }
-    addMessage('bot loading', 'Отправляю в репозиторий…', 'chatLoading');
-    try {
-      if (errorMatch) {
-        await GitHubClient.reportError(errorMatch[1].trim());
-        document.querySelector('#chatLoading')?.remove();
-        addMessage('bot', '✅ Ошибка записана! Спасибо, Ирина. Мы это исправим.');
-      } else {
-        await GitHubClient.reportAddition(additionMatch[1].trim());
-        document.querySelector('#chatLoading')?.remove();
-        addMessage('bot', '✅ Дополнение записано! Хорошая находка, Ирина.');
-      }
-    } catch (e) {
-      document.querySelector('#chatLoading')?.remove();
-      addMessage('bot', `Не удалось отправить: ${e.message}`);
-    }
-    return;
-  }
-
-  if (!GeminiClient.hasKey()) {
-    showKeyPrompt();
-    return;
-  }
-
-  addMessage('bot loading', 'Думаю', 'chatLoading');
-  document.querySelector('#apiStatus').textContent = 'сообщение отправлено…';
-
-  try {
-    const courseId = document.querySelector('#chatContext').value;
-    const answer = await GeminiClient.sendMessage(text, courseId);
-    document.querySelector('#chatLoading')?.remove();
-    addMessage('bot', answer);
-    document.querySelector('#apiStatus').textContent = 'работает';
-  } catch (e) {
-    document.querySelector('#chatLoading')?.remove();
-    addMessage('bot', e.message);
-    document.querySelector('#apiStatus').textContent = 'ошибка — проверь ключ';
-  }
-}
-
 // ─── Event Listeners ───
 
 document.addEventListener('click', e => {
@@ -862,54 +729,7 @@ document.querySelector('#resetProgress').onclick = () => {
   }
 };
 
-// Chat context dropdown
-document.querySelector('#chatContext').innerHTML =
-  '<option value="general">Общий вопрос</option>' +
-  COURSES.map(c => `<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
-
-// Chat form
-document.querySelector('#chatForm').onsubmit = e => {
-  e.preventDefault();
-  const i = document.querySelector('#chatInput');
-  const text = i.value.trim();
-  if (text) { i.value = ''; askMisa(text); }
-};
-
-// Quick questions
-document.querySelectorAll('#quickList button').forEach(b => {
-  b.onclick = () => askMisa(b.textContent);
-});
-
-// Clear chat
-document.querySelector('#clearChat').onclick = () => {
-  GeminiClient.clearHistory();
-  document.querySelector('#messages').innerHTML =
-    '<div class="message bot"><b>Миса</b><p>Начинаем новую тему. Что разберём?</p></div>';
-};
-
-// API key setup button — add to chat sidebar
-const keyBtn = document.createElement('button');
-keyBtn.className = 'glass-button key-setup-btn';
-keyBtn.textContent = 'Настроить ключ Gemini';
-keyBtn.onclick = showKeyPrompt;
-const chatAbout = document.querySelector('.chat-about');
-if (chatAbout) chatAbout.appendChild(keyBtn);
-
-// GitHub token setup button
-const ghBtn = document.createElement('button');
-ghBtn.className = 'glass-button key-setup-btn';
-ghBtn.textContent = 'Настроить GitHub';
-ghBtn.onclick = showGitHubPrompt;
-if (chatAbout) chatAbout.appendChild(ghBtn);
-
 // ─── Init ───
-
-// Auto-setup: if ?key=XXX in URL, save it and reload clean
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.has('key')) {
-  GeminiClient.setKey(urlParams.get('key'));
-  window.location.replace(window.location.pathname + window.location.hash);
-}
 
 renderAcademy();
 renderSearch();
@@ -917,7 +737,7 @@ updateStats();
 
 const hash = location.hash.slice(1);
 if (hash.startsWith('course/')) route('course', hash.split('/')[1]);
-else route(['home','academy','search','knowledge','wiki','review','chat'].includes(hash) ? hash : 'home');
+else route(['home','academy','search','knowledge','wiki','review'].includes(hash) ? hash : 'home');
 
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('service-worker.js').catch(() => {});
