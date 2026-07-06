@@ -484,29 +484,29 @@ function renderKnowledgeBase(key) {
     html += `<div class="kb-section"><h2>🔍 Диагностика</h2>
       <p class="kb-intro">Покупатель описывает проблему → ты предполагаешь причину → предлагаешь деталь.</p>`;
     data.diagnostics.forEach(d => {
-      html += `<div class="kb-diag-row">
-        <span class="kb-diag-symptom">${d[0]}</span>
-        <span class="kb-diag-cause">${d[1]}</span>
-        <span class="kb-diag-action">${d[2]}</span>
+      html += `<div class="kb-diag-card">
+        <h3>«${d.symptom}»</h3>
+        ${d.causes.map(c => `<p><b>${c.name}</b> (${c.probability}) — ${c.part} ${c.price}<br><small>${c.note}</small></p>`).join('')}
+        <p class="kb-tip">💬 ${d.tip}</p>
       </div>`;
     });
     html += '</div>';
   }
 
   // Brands
-  if (data.brands && data.brands.length) {
+  if (data.brands && Object.keys(data.brands).length) {
     html += `<div class="kb-section"><h2>🏭 Совместимость брендов</h2>`;
-    data.brands.forEach(b => {
-      html += `<div class="kb-brand-row"><b>${b[0]}</b><span>${b[1]}</span><small>${b[2]}</small></div>`;
+    Object.entries(data.brands).forEach(([name, desc]) => {
+      html += `<div class="kb-brand-row"><b>${name}</b><span>${desc}</span></div>`;
     });
     html += '</div>';
   }
 
   // Types
-  if (data.types && data.types.length) {
+  if (data.types && Object.keys(data.types).length) {
     html += `<div class="kb-section"><h2>📐 Типы техники</h2>`;
-    data.types.forEach(t => {
-      html += `<div class="kb-type-row"><b>${t[0]}</b><p>${t[1]}</p><small>${t[2]}</small></div>`;
+    Object.entries(data.types).forEach(([name, desc]) => {
+      html += `<div class="kb-type-row"><b>${name}</b><p>${desc}</p></div>`;
     });
     html += '</div>';
   }

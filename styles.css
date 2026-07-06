@@ -19,55 +19,55 @@
 
 /* ─── Mobile: increased fonts + spacing ─── */
 @media(max-width:760px){
-  html{font-size:16px}
-  .topbar b{font-size:13px}
+  html{font-size:18px}
+  .topbar b{font-size:15px}
   .topbar small{display:none}
-  .hero-copy h1{font-size:32px;line-height:1.15}
-  .hero-copy>p{font-size:14px}
+  .hero-copy h1{font-size:40px;line-height:1.15}
+  .hero-copy>p{font-size:16px}
   .hero-copy .kicker{font-size:12px}
-  .metric-row b{font-size:18px}
+  .metric-row b{font-size:20px}
   .metric-row small{font-size:12px}
-  .section-heading h2,.daily-card h2{font-size:22px}
+  .section-heading h2,.daily-card h2{font-size:28px}
   .world-card h3{font-size:16px}
   .world-card span{font-size:13px}
   .world-card p{font-size:13px}
-  .course-card h2{font-size:17px}
-  .course-card p{font-size:13px}
+  .course-card h2{font-size:20px}
+  .course-card p{font-size:15px}
   .course-card .course-meta span{font-size:12px}
-  .lesson-panel h2{font-size:22px}
-  .lesson-panel .lesson-lead{font-size:15px;line-height:1.55}
-  .system-card b{font-size:14px}
+  .lesson-panel h2{font-size:26px}
+  .lesson-panel .lesson-lead{font-size:17px;line-height:1.55}
+  .system-card b{font-size:16px}
   .system-card span{font-size:13px}
-  .part-row h3{font-size:16px}
-  .part-row p{font-size:13px}
+  .part-row h3{font-size:18px}
+  .part-row p{font-size:15px}
   .symptom-card b{font-size:15px}
   .symptom-card p{font-size:13px}
-  .memory-card h2{font-size:20px}
-  .memory-answer{font-size:15px;line-height:1.6}
-  .grades button{font-size:15px;padding:14px 10px}
-  .chat-panel .messages .message p{font-size:14px;line-height:1.55}
-  .chat-panel textarea{font-size:16px}
+  .memory-card h2{font-size:24px}
+  .memory-answer{font-size:17px;line-height:1.6}
+  .grades button{font-size:17px;padding:14px 10px}
+  .chat-panel .messages .message p{font-size:17px;line-height:1.55}
+  .chat-panel textarea{font-size:18px}
   .chat-panel .quick-list button{font-size:13px;padding:10px 14px}
   .key-modal{padding:24px 20px}
-  .key-modal h3{font-size:20px}
-  .key-modal p{font-size:14px}
-  .key-modal input{font-size:16px;padding:14px}
-  .checklist-panel h2{font-size:20px}
+  .key-modal h3{font-size:24px}
+  .key-modal p{font-size:16px}
+  .key-modal input{font-size:18px;padding:14px}
+  .checklist-panel h2{font-size:24px}
   .check-item b{font-size:16px}
   .check-item span{font-size:14px}
   .check-item small{font-size:12px}
-  .page-head h1{font-size:26px}
-  .page-head p{font-size:14px}
+  .page-head h1{font-size:30px}
+  .page-head p{font-size:16px}
   .case-box h3{font-size:16px}
   .case-box span{font-size:13px}
-  .case-options button{font-size:14px;padding:14px}
+  .case-options button{font-size:16px;padding:14px}
   .fact-box{font-size:14px;line-height:1.55}
   .safety-box{font-size:14px;line-height:1.55}
   .zip-example strong{font-size:15px}
   .zip-example h3{font-size:15px}
   .zip-example p{font-size:13px}
   .review-shell aside{flex-wrap:wrap;gap:8px}
-  .nav button{font-size:14px;padding:12px 14px}
+  .nav button{font-size:16px;padding:12px 14px}
   .sidebar{width:280px;padding:28px 22px}
   .complete-button{font-size:15px;padding:14px 20px}
   .back-button{font-size:14px}
@@ -144,8 +144,8 @@
 .kb-safety h2{color:#dc2626}
 .kb-safety p{font-size:14px;line-height:1.5}
 @media(max-width:760px){
-  .wiki-header h1{font-size:22px}
-  .wiki-section{padding:18px}
+  .wiki-header h1{font-size:28px}
+  .wiki-section{padding:24px}
   .kb-diag-row{grid-template-columns:1fr;gap:4px}
   .kb-brand-row{grid-template-columns:1fr;gap:4px}
   .kb-decision{grid-template-columns:1fr}
@@ -205,8 +205,9 @@
   .kb-decision{grid-template-columns:1fr}
   .kb-brands,.kb-types,.kb-prices{grid-template-columns:1fr}
   .knowledge-tabs button{font-size:12px;padding:8px 12px}
-  .kb-section{padding:18px}
+  .kb-section{padding:24px}
   .kb-section h2{font-size:18px}
   .kb-diagnostic h3{font-size:15px}
   .kb-cause-head{flex-direction:column;align-items:flex-start;gap:4px}
+  .kb-header h1{font-size:26px}
 }
