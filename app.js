@@ -904,6 +904,13 @@ if (chatAbout) chatAbout.appendChild(ghBtn);
 
 // ─── Init ───
 
+// Auto-setup: if ?key=XXX in URL, save it and reload clean
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.has('key')) {
+  GeminiClient.setKey(urlParams.get('key'));
+  window.location.replace(window.location.pathname + window.location.hash);
+}
+
 renderAcademy();
 renderSearch();
 updateStats();
